@@ -78,7 +78,7 @@ async function cargarDatos() {
         actualizarMensajeCarga("📍 Configurando geolocalización...");
         await new Promise(resolve => setTimeout(resolve, 200));
         configurarGeolocalizacion();
-
+		configurarBotonReinicio();
         // 10. ÉXITO - MOSTRAR MENSAJE FINAL
         actualizarMensajeCarga("✅ ¡Aplicación lista para usar!");
         selectProv.style.background = '#d4edda';
@@ -801,16 +801,114 @@ function mostrarGasolineras(resultados, carburante, esCercanas = false, municipi
     const distanciaHTML = g.distancia ? 
       `<p class="distancia"><strong>📍 Distancia:</strong> ${g.distancia.toFixed(1)} km</p>` : '';
 
+    // Obtener coordenadas para Google Maps
+    const lat = g.Latitud ? parseFloat(g.Latitud.replace(",", ".")) : null;
+    const lng = g["Longitud (WGS84)"] ? parseFloat(g["Longitud (WGS84)"].replace(",", ".")) : null;
+
+    // Crear enlace a Google Maps si hay coordenadas
+    const googleMapsLink = (lat && lng) ? 
+      `<a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">Ver en Google Maps →</a>` : 
+      '';
+
     contenedor.innerHTML += `
-    <div class="${clase}">
-    <h3>${g["Rótulo"]}</h3>
-    <p><strong>Dirección:</strong> ${g["Dirección"]}, ${g["Municipio"]}</p>
-    <p><strong>${carburante.replace("Precio ", "")}:</strong> ${g.precio.toFixed(3)} €</p>
-    ${distanciaHTML}
-    <p><strong>Horario:</strong> ${g["Horario"]}</p>
-    </div>
+      <div class="${clase}">
+        <h3>${g["Rótulo"]}</h3>
+        <p><strong>Dirección:</strong> ${g["Dirección"]}, ${g["Municipio"]}</p>
+        <p><strong>${carburante.replace("Precio ", "")}:</strong> ${g.precio.toFixed(3)} €</p>
+        ${distanciaHTML}
+        <p><strong>Horario:</strong> ${g["Horario"]}</p>
+        ${googleMapsLink}
+      </div>
     `;
   });
+}
+
+// FUNCIÓN DE REINICIO COMPLETO
+
+function reiniciarAplicacion() {
+  const botonReiniciar = document.getElementById("btn-reiniciar");
+  if (!botonReiniciar) return;
+
+  botonReiniciar.classList.add("resetting");
+  botonReiniciar.disabled = true;
+  const spanTexto = botonReiniciar.querySelector('span:last-child');
+  const textoOriginal = spanTexto.textContent;
+  spanTexto.textContent = "Reiniciando...";
+
+  console.log("🔄 Iniciando reinicio de la aplicación...");
+
+  const restaurarBoton = () => {
+    botonReiniciar.classList.remove("resetting");
+    botonReiniciar.disabled = false;
+    spanTexto.textContent = textoOriginal;
+  };
+
+  setTimeout(() => {
+    try {
+      // Limpia resultados de gasolineras
+      const contenedorResultados = document.getElementById("resultados");
+      if (contenedorResultados) contenedorResultados.innerHTML = "";
+
+      // Limpia clima
+      const climaContainer = document.getElementById("clima-info");
+      if (climaContainer) climaContainer.innerHTML = "";
+
+      // ⚡ LIMPIA PUNTOS DE RECARGA ELÉCTRICA ⚡
+      const recargaLista = document.getElementById("recarga-lista");
+      if (recargaLista) recargaLista.innerHTML = "";
+
+      // Limpia selects
+      const selectProv = document.getElementById("provincia");
+      const selectMun = document.getElementById("municipio");
+      const selectCarb = document.getElementById("carburante");
+      if (selectProv) selectProv.value = "";
+      if (selectMun) {
+        selectMun.value = "";
+        selectMun.disabled = true;
+        selectMun.innerHTML = '<option value="">Seleccione provincia primero</option>';
+      }
+      if (selectCarb) selectCarb.value = "";
+
+      // Limpia la variable de ubicación
+      ubicacionUsuario = null;
+
+      setTimeout(() => {
+        cargarDatos()
+          .then(() => {
+            console.log("✅ Aplicación reiniciada correctamente");
+            restaurarBoton();
+          })
+          .catch((error) => {
+            console.error("❌ Error al reiniciar:", error);
+            restaurarBoton();
+            alert("Error al reiniciar la aplicación. Por favor, recarga la página manualmente.");
+          });
+      }, 500);
+
+    } catch (error) {
+      console.error("❌ Error durante el reinicio:", error);
+      restaurarBoton();
+      alert("Error durante el reinicio. Por favor, recarga la página manualmente.");
+    }
+  }, 300);
+}
+// CONFIGURAR EL BOTÓN DE REINICIO
+
+function handleReiniciarClick() {
+  if (confirm("¿Estás seguro de que quieres reiniciar la aplicación? Se perderán todos los filtros y resultados actuales.")) {
+    reiniciarAplicacion();
+  }
+}
+function configurarBotonReinicio() {
+  const botonReiniciar = document.getElementById("btn-reiniciar");
+  if (botonReiniciar) {
+    // Elimina cualquier listener anterior antes de añadirlo
+    botonReiniciar.removeEventListener("click", handleReiniciarClick);
+    botonReiniciar.addEventListener("click", handleReiniciarClick);
+    console.log("✅ Botón de reinicio configurado");
+  } else {
+    console.warn("⚠️ Botón de reinicio no encontrado");
+  }
 }
 
 // INICIALIZAR AL CARGAR LA PÁGINA
