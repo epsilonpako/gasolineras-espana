@@ -5,100 +5,258 @@ let ubicacionUsuario = null;
 const apiKey = '2751c34eac1e3f2117bf2038edec76ce';
 
 // Función principal que se ejecuta al cargar la página
+// Función principal que se ejecuta al cargar la página
 async function cargarDatos() {
-  console.log("🚀 Iniciando carga de datos...");
-
-  const selectProv = document.getElementById("provincia");
-  if (!selectProv) {
-    console.error("❌ No se encontró el elemento provincia");
-    return;
-  }
-
-  selectProv.innerHTML = '<option value="">⏳ Cargando datos...</option>';
-
-  try {
-    console.log("📡 Intentando cargar datos de gasolineras...");
-    const datos = await intentarCargarDatos();
-	// Extraer la fecha de actualización
-	let fechaActualizacion = datos.Fecha || datos.fecha || datos.FechaActualizacion || null;
-	
-	
-	
-	
-    if (fechaActualizacion) {
-      mostrarFechaActualizacion(fechaActualizacion);
-	}
-    if (!datos || !datos.ListaEESSPrecio || !Array.isArray(datos.ListaEESSPrecio)) {
-      throw new Error("Datos recibidos no válidos");
+    console.log("🚀 Iniciando carga de datos...");
+    
+    const selectProv = document.getElementById("provincia");
+    if (!selectProv) {
+        console.error("❌ No se encontró el elemento provincia");
+        return;
     }
 
-    datosGasolineras = datos.ListaEESSPrecio;
-    console.log(`✅ Cargadas ${datosGasolineras.length} gasolineras`);
+    // 1. MOSTRAR LOADING INICIAL MÁS VISIBLE
+    selectProv.innerHTML = '⏳ Iniciando carga...';
+    selectProv.style.background = '#fff3cd';
+    selectProv.style.border = '2px solid #ffc107';
+    selectProv.style.color = '#856404';
+    selectProv.style.fontWeight = 'bold';
+    
+    // 2. CREAR Y MOSTRAR SPINNER GLOBAL
+    mostrarSpinnerGlobal(true);
+    actualizarMensajeCarga("🔄 Preparando conexión...");
+    
+    // 3. PEQUEÑA PAUSA PARA QUE SE VEA EL LOADING
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    llenarProvincias();
-    configurarGeolocalizacion();
+    try {
+        // 4. FASE 1: CONECTAR CON API
+        actualizarMensajeCarga("📡 Conectando con el Ministerio...");
+        selectProv.innerHTML = '📡 Conectando con servidor...';
+        
+        console.log("📡 Intentando cargar datos de gasolineras...");
+        const datos = await intentarCargarDatos();
+        
+        // 5. FASE 2: VALIDAR DATOS
+        actualizarMensajeCarga("🔍 Validando datos recibidos...");
+        selectProv.innerHTML = '🔍 Validando información...';
+        
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        if (!datos || !datos.ListaEESSPrecio || !Array.isArray(datos.ListaEESSPrecio)) {
+            throw new Error("Datos recibidos no válidos o estructura incorrecta");
+        }
 
-  } catch (err) {
-    console.error("❌ Error cargando datos:", err);
-    selectProv.innerHTML = '<option value="">❌ Error al cargar datos</option>';
-    mostrarErrorConexion(err);
-  }
+        // 6. FASE 3: PROCESAR DATOS
+        actualizarMensajeCarga("📊 Procesando gasolineras...");
+        selectProv.innerHTML = `📊 Procesando ${datos.ListaEESSPrecio.length} gasolineras...`;
+        
+        datosGasolineras = datos.ListaEESSPrecio;
+        console.log(`✅ Cargadas ${datosGasolineras.length} gasolineras`);
+        
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // 7. FASE 4: EXTRAER FECHA DE ACTUALIZACIÓN
+        actualizarMensajeCarga("📅 Obteniendo fecha de actualización...");
+        
+        let fechaActualizacion = datos.Fecha || datos.fecha || datos.FechaActualizacion || null;
+        if (fechaActualizacion) {
+            mostrarFechaActualizacion(fechaActualizacion);
+            console.log(`📅 Fecha de actualización: ${fechaActualizacion}`);
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // 8. FASE 5: LLENAR PROVINCIAS
+        actualizarMensajeCarga("🏛️ Cargando provincias...");
+        selectProv.innerHTML = '🏛️ Organizando provincias...';
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+        llenarProvincias();
+
+        // 9. FASE 6: CONFIGURAR GEOLOCALIZACIÓN
+        actualizarMensajeCarga("📍 Configurando geolocalización...");
+        await new Promise(resolve => setTimeout(resolve, 200));
+        configurarGeolocalizacion();
+
+        // 10. ÉXITO - MOSTRAR MENSAJE FINAL
+        actualizarMensajeCarga("✅ ¡Aplicación lista para usar!");
+        selectProv.style.background = '#d4edda';
+        selectProv.style.border = '2px solid #28a745';
+        selectProv.style.color = '#155724';
+        
+        console.log("🎉 Aplicación cargada correctamente");
+        
+        // 11. OCULTAR SPINNER DESPUÉS DE UN MOMENTO
+        setTimeout(() => {
+            ocultarSpinnerGlobal();
+            // Restaurar estilos normales del select
+            selectProv.style.background = '';
+            selectProv.style.border = '';
+            selectProv.style.color = '';
+            selectProv.style.fontWeight = '';
+        }, 1500);
+
+    } catch (err) {
+        console.error("❌ Error cargando datos:", err);
+        
+        // MANEJO DE ERRORES CON FEEDBACK VISUAL
+        ocultarSpinnerGlobal();
+        
+        // Mostrar error en el select
+        selectProv.innerHTML = '❌ Error al cargar datos';
+        selectProv.style.background = '#f8d7da';
+        selectProv.style.border = '2px solid #dc3545';
+        selectProv.style.color = '#721c24';
+        selectProv.style.fontWeight = 'bold';
+        
+        // Mostrar error detallado
+        mostrarErrorConexion(err);
+        
+        // Botón de reintento
+        setTimeout(() => {
+            selectProv.innerHTML = '🔄 Toca para reintentar';
+            selectProv.style.cursor = 'pointer';
+            selectProv.onclick = () => {
+                selectProv.onclick = null;
+                selectProv.style.cursor = '';
+                cargarDatos(); // Reintentar
+            };
+        }, 2000);
+    }
+}
+
+// FUNCIONES DE SOPORTE PARA EL LOADING
+
+function mostrarSpinnerGlobal(mostrar) {
+    let spinner = document.getElementById('spinner-global');
+    
+    if (mostrar && !spinner) {
+        // Crear spinner si no existe
+        spinner = document.createElement('div');
+        spinner.id = 'spinner-global';
+        spinner.innerHTML = `
+            <div class="spinner-overlay">
+                <div class="spinner-content">
+                    <div class="spinner-icon">⏳</div>
+                    <div id="mensaje-carga">Cargando...</div>
+                    <div class="spinner-bar">
+                        <div class="spinner-progress"></div>
+                    </div>
+                    <div class="spinner-tip">
+                        <small>💡 En móviles puede tardar un poco más</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(spinner);
+    }
+    
+    if (spinner) {
+        spinner.style.display = mostrar ? 'block' : 'none';
+    }
+}
+
+function ocultarSpinnerGlobal() {
+    const spinner = document.getElementById('spinner-global');
+    if (spinner) {
+        // Animación de salida suave
+        spinner.style.opacity = '0';
+        spinner.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => {
+            spinner.style.display = 'none';
+            spinner.style.opacity = '1';
+            spinner.style.transition = '';
+        }, 300);
+    }
+}
+
+function actualizarMensajeCarga(mensaje) {
+    const mensajeEl = document.getElementById('mensaje-carga');
+    if (mensajeEl) {
+        mensajeEl.textContent = mensaje;
+        console.log(`📱 ${mensaje}`); // Log con emoji para móviles
+    }
+    
+    // También actualizar el título de la página para feedback adicional
+    //const tituloOriginal = document.title;
+    //document.title = `${mensaje} - Gasolineras España`;
+    
+    // Restaurar título después de un momento
+    //setTimeout(() => {
+    //    document.title = tituloOriginal;
+    //}, 3000);
+}
+
+// DETECTAR SI ES MÓVIL ANDROID PARA OPTIMIZACIONES
+function esAndroid() {
+    return /Android/i.test(navigator.userAgent);
+}
+
+function esMovil() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 async function intentarCargarDatos() {
-  const url = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/";
+    const url = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/";
+    const proxies = [
+        "https://corsproxy.io/?",
+        "https://cors-anywhere.herokuapp.com/",
+        "https://api.allorigins.win/raw?url=",
+        ""
+    ];
 
-  const proxies = [
-    "https://corsproxy.io/?",
-    "https://cors-anywhere.herokuapp.com/",
-    "https://api.allorigins.win/raw?url=",
-    ""
-  ];
+    for (let i = 0; i < proxies.length; i++) {
+        try {
+            // Mostrar qué método está probando
+            actualizarMensajeCarga(`🔄 Probando conexión ${i + 1}/${proxies.length}...`);
+            
+            const proxyUrl = proxies[i] + (proxies[i] ? encodeURIComponent(url) : url);
+            const controller = new AbortController();
+            
+            // Timeout más largo para móviles
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+                actualizarMensajeCarga(`⏰ Timeout en método ${i + 1}, probando siguiente...`);
+            }, 20000); // 20 segundos en lugar de 15
+            
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                signal: controller.signal
+            });
 
-  for (let i = 0; i < proxies.length; i++) {
-    try {
-      console.log(`🔄 Probando método ${i + 1}/${proxies.length}...`);
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
 
-      const proxyUrl = proxies[i] + (proxies[i] ? encodeURIComponent(url) : url);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch(proxyUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (data && data.ListaEESSPrecio && Array.isArray(data.ListaEESSPrecio)) {
-        console.log(`✅ Éxito con método ${i + 1}`);
-        return data;
-      } else {
-        throw new Error("Formato de datos inválido");
-      }
-
-    } catch (error) {
-      console.warn(`⚠️ Método ${i + 1} falló:`, error.message);
-
-      if (i === proxies.length - 1) {
-        throw new Error(`Todos los métodos fallaron. Último error: ${error.message}`);
-      }
-
-      // Esperar antes del siguiente intento
-      await new Promise(resolve => setTimeout(resolve, 1000));
+            actualizarMensajeCarga(`📥 Descargando datos...`);
+            const data = await response.json();
+            
+            if (data && data.ListaEESSPrecio && Array.isArray(data.ListaEESSPrecio)) {
+                actualizarMensajeCarga(`✅ Datos recibidos correctamente`);
+                return data;
+            } else {
+                throw new Error("Formato de datos inválido");
+            }
+            
+        } catch (error) {
+            console.warn(`⚠️ Método ${i + 1} falló:`, error.message);
+            actualizarMensajeCarga(`❌ Método ${i + 1} falló, probando alternativa...`);
+            
+            if (i === proxies.length - 1) {
+                throw new Error(`Todos los métodos fallaron. Último error: ${error.message}`);
+            }
+            
+            // Esperar más tiempo en móviles
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
     }
-  }
 }
 
 function llenarProvincias() {
