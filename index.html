@@ -17,6 +17,7 @@
   </header>
 
   <div class="filtros">
+  <div class="busqueda-container">
     <select id="provincia">
       <option value="">Cargando provincias...</option>
     </select>
@@ -44,20 +45,34 @@
       <span id="geo-icon">📍</span>
       <span id="geo-text">Gasolineras cercanas</span>
     </button>
+    <button id="btn-electrico">Mi coche es eléctrico</button>
+	
+	<button id="btn-reiniciar" class="reset-button">
+	<span>🔄</span>
+	<span>Reiniciar</span>
+	</button>
+	
   </div>
-
-  <!-- SECCIÓN DEL CLIMA -->
+  <div id="recarga-lista"></div>
+</div>
+	
+	
+	
+	
+	
+	<!-- SECCIÓN DEL CLIMA -->
   <div id="clima-info"></div>
 
   <!-- RESULTADOS -->
   <div id="resultados"></div>
 
-  <script src="app.js"></script>
+	<script src="app.js"></script>
+	<script src="electricos.js"></script>
   <footer>
-  <p>
-    Creado por <strong>Pako García</strong> &copy; 2025 · 
-    <a href="https://www.pakogarcia.es" target="_blank" rel="noopener">www.pakogarcia.es</a>
-  </p>
-</footer>
+    <p>
+      Creado por <strong>Pako García</strong> &copy; 2025 · 
+      <a href="https://www.pakogarcia.es" target="_blank" rel="noopener">www.pakogarcia.es</a>
+    </p>
+  </footer>
 </body>
 </html>
