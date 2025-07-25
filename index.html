@@ -96,6 +96,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* IMPORTANTE: Para posicionar las etiquetas correctamente */
     }
 
     .gasolinera:hover {
@@ -121,20 +122,21 @@
     .destacada {
     border: 2px solid var(--accent);
     background-color: #e8f4ff;
-    position: relative;
     }
 
+    /* CORREGIDO: Etiqueta "Más barata" */
     .destacada::before {
     content: "⭐ Más barata";
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -8px;
+    right: 10px;
     background: var(--accent);
     color: white;
-    font-size: 12px;
-    padding: 3px 6px;
-    border-radius: 8px;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 10;
     }
 
     .cercana {
@@ -142,19 +144,22 @@
     background-color: #e8f5e8;
     }
 
+    /* CORREGIDO: Etiqueta "Cercana" */
     .cercana::before {
     content: "📍 Cercana";
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -8px;
+    right: 10px;
     background: var(--success);
     color: white;
-    font-size: 12px;
-    padding: 3px 6px;
-    border-radius: 8px;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 10;
     }
 
+    /* NUEVO: Evitar que las etiquetas se salgan en móviles */
     @media (max-width: 500px) {
     .filtros {
     flex-direction: column;
@@ -164,6 +169,27 @@
     select, button {
     width: 100%;
     }
+
+    .destacada::before,
+    .cercana::before {
+    right: 5px;
+    top: -6px;
+    font-size: 10px;
+    padding: 3px 6px;
+    }
+
+    .gasolinera {
+    margin: 0 5px; /* Margen para que las etiquetas no se salgan */
+    }
+    }
+
+    /* NUEVO: Asegurar que las etiquetas no interfieran con el scroll */
+    body {
+    overflow-x: hidden;
+    }
+
+    #resultados {
+    overflow: visible;
     }
   </style>
 </head>
