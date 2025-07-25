@@ -1,6 +1,6 @@
 :root {
   --bg: #f0f4f8;
-  --card: #ffff;
+  --card: #fff;
   --primary: #2c3e50;
   --accent: #3498db;
   --text: #333;
@@ -9,8 +9,23 @@
   --clima-border: #3498db;
 }
 
-* {
-  box-sizing: border-box;
+/* Reset y base */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  padding: 20px;
+  color: var(--text);
+  overflow-x: hidden;
+}
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+header h1 {
+  color: var(--primary);
+  margin-bottom: 10px;
 }
 footer {
   text-align: center;
@@ -21,101 +36,6 @@ footer {
   margin-top: 40px;
   letter-spacing: 0.5px;
 }
-
-/* Spinner global mejorado */
-#spinner-global {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-    display: none;
-}
-
-.spinner-overlay {
-    background: rgba(0, 0, 0, 0.8);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(2px);
-}
-
-.spinner-content {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    max-width: 320px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 2px solid #007bff;
-}
-
-.spinner-icon {
-    font-size: 3em;
-    margin-bottom: 15px;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-#mensaje-carga {
-    font-size: 16px;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 600;
-    min-height: 20px;
-}
-
-.spinner-bar {
-    width: 100%;
-    height: 6px;
-    background: #e9ecef;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-.spinner-progress {
-    height: 100%;
-    background: linear-gradient(90deg, #007bff, #0056b3);
-    animation: progress 2s ease-in-out infinite;
-}
-
-@keyframes progress {
-    0% { width: 0%; }
-    50% { width: 70%; }
-    100% { width: 100%; }
-}
-
-.spinner-tip {
-    color: #6c757d;
-    font-size: 12px;
-    margin-top: 10px;
-}
-
-/* Optimizaciones para móviles */
-@media (max-width: 768px) {
-    .spinner-content {
-        margin: 20px;
-        padding: 25px 20px;
-        max-width: 280px;
-    }
-    
-    #mensaje-carga {
-        font-size: 14px;
-    }
-    
-    .spinner-icon {
-        font-size: 2.5em;
-    }
-}
-
 footer a {
   color: #7ec3ff;
   text-decoration: none;
@@ -125,78 +45,172 @@ footer a:hover {
   text-decoration: underline;
   color: #fff;
 }
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--bg);
-  padding: 20px;
-  color: var(--text);
-  overflow-x: hidden;
-}
 
-header {
-  text-align: center;
+/* CONTENEDOR DE FILTROS Y BOTONES */
+
+.reset-button {
+  background: #dc3545 !important;
+  color: #fff !important;
+}
+.filtros {
+  width: 100%;
   margin-bottom: 30px;
 }
-
-header h1 {
-  color: var(--primary);
-  margin-bottom: 10px;
-}
-
-.filtros {
+.busqueda-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 15px;
-  margin-bottom: 30px;
+  margin: 30px auto 40px auto;
+  max-width: 1000px;
 }
-
-select, button {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+.busqueda-container select,
+.busqueda-container button {
+  font-size: 1.1em;
+  padding: 10px 18px;
   border-radius: 8px;
-  min-width: 200px;
+  border: 1px solid #ddd;
+  background: #fff;
+  margin: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  transition: box-shadow 0.2s;
 }
-
-button {
-  background: var(--success);
-  color: white;
+.busqueda-container button {
+  background: #28a745;
+  color: #fff;
   border: none;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-weight: 600;
+  transition: background 0.2s;
+  box-shadow: 0 1px 4px rgba(40,167,69,0.08);
 }
-
-button:hover {
-  background: #219a52;
+.busqueda-container button:hover {
+  background: #218838;
 }
-
-button:disabled {
-  background: #bdc3c7;
-  cursor: not-allowed;
-}
-
 .geo-button {
+  background: #20b2aa;
+}
+.geo-button:hover {
+  background: #178f8a;
+}
+
+/* Responsive para filtros y botones */
+@media (max-width: 700px) {
+  .busqueda-container {
+    flex-direction: column;
+    gap: 10px;
+    max-width: 98vw;
+  }
+  .busqueda-container select,
+  .busqueda-container button {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+@media (max-width: 768px) {
+  .filtros {
+    padding: 15px;
+  }
+  
+  .busqueda-container > * {
+    margin-bottom: 15px !important;
+  }
+  
+  .busqueda-container > *:last-child {
+    margin-bottom: 0 !important;
+  }
+  
+  button {
+    min-height: 48px;
+    padding: 14px 18px;
+    font-size: 16px;
+    touch-action: manipulation; /* Mejora la respuesta táctil */
+  }
+  
+  select {
+    min-height: 44px;
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+/* SPINNER GLOBAL */
+#spinner-global {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  display: none;
+}
+.spinner-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  width: 100%; height: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  backdrop-filter: blur(2px);
 }
-
-.loading {
-  animation: spin 1s linear infinite;
+.spinner-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid #007bff;
 }
-
+.spinner-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+  animation: spin 2s linear infinite;
+}
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-/* ESTILOS DEL CLIMA */
-#clima-info {
-  margin-bottom: 30px;
+#mensaje-carga {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+  min-height: 20px;
+}
+.spinner-bar {
+  width: 100%;
+  height: 6px;
+  background: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+.spinner-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  animation: progress 2s ease-in-out infinite;
+}
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+.spinner-tip {
+  color: #6c757d;
+  font-size: 12px;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .spinner-content {
+    margin: 20px;
+    padding: 25px 20px;
+    max-width: 280px;
+  }
+  #mensaje-carga { font-size: 14px; }
+  .spinner-icon { font-size: 2.5em; }
 }
 
+/* ESTILOS DEL CLIMA */
+#clima-info { margin-bottom: 30px; }
 .clima-card {
   background: var(--clima-bg);
   border: 2px solid var(--clima-border);
@@ -206,50 +220,37 @@ button:disabled {
   max-width: 500px;
   margin: 0 auto;
 }
-
 .clima-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;
 }
-
 .clima-header h3 {
   margin: 0;
   color: var(--clima-border);
   font-size: 18px;
 }
-
-.clima-icono {
-  width: 60px;
-  height: 60px;
-}
-
+.clima-icono { width: 60px; height: 60px; }
 .clima-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   align-items: center;
 }
-
-.clima-temp {
-  text-align: center;
-}
-
+.clima-temp { text-align: center; }
 .temp-principal {
   display: block;
   font-size: 32px;
   font-weight: bold;
   color: var(--clima-border);
 }
-
 .temp-sensacion {
   display: block;
   font-size: 12px;
   color: #666;
   margin-top: 5px;
 }
-
 .clima-descripcion {
   text-align: center;
   font-size: 16px;
@@ -257,7 +258,6 @@ button:disabled {
   color: var(--primary);
   text-transform: capitalize;
 }
-
 .clima-detalles {
   grid-column: 1 / -1;
   display: flex;
@@ -266,25 +266,21 @@ button:disabled {
   padding-top: 15px;
   border-top: 1px solid rgba(52, 152, 219, 0.2);
 }
-
 .clima-detalles span {
   font-size: 14px;
   color: #666;
 }
-
 .clima-loading, .clima-error {
   text-align: center;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
 }
-
 .clima-loading {
   background: #fff3cd;
   color: #856404;
   border: 1px solid #ffeaa7;
 }
-
 .clima-error {
   background: #f8d7da;
   color: #721c24;
@@ -292,13 +288,12 @@ button:disabled {
 }
 
 /* ESTILOS DE GASOLINERAS */
-#resultados {
+#resultados, #resultados-electricos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   overflow: visible;
 }
-
 .gasolinera {
   background: var(--card);
   padding: 20px;
@@ -307,32 +302,26 @@ button:disabled {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
 }
-
 .gasolinera:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.1);
 }
-
 .gasolinera h3 {
   margin-top: 0;
   color: var(--accent);
 }
-
 .gasolinera p {
   margin: 6px 0;
   font-size: 14px;
 }
-
 .distancia {
   color: var(--success);
   font-weight: bold;
 }
-
 .destacada {
   border: 2px solid var(--accent);
   background-color: #e8f4ff;
 }
-
 .destacada::before {
   content: "⭐ Más barata";
   position: absolute;
@@ -346,12 +335,10 @@ button:disabled {
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   z-index: 10;
 }
-
 .cercana {
   border: 2px solid var(--success);
   background-color: #e8f5e8;
 }
-
 .cercana::before {
   content: "📍 Cercana";
   position: absolute;
@@ -366,17 +353,52 @@ button:disabled {
   z-index: 10;
 }
 
-/* RESPONSIVE DESIGN */
+}
+
+/* Electricos */
+#btn-electrico {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
+  transition: background-color 0.3s;
+}
+#btn-electrico:hover {
+  background-color: #218838;
+}
+#btn-electrico:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+#recarga-lista {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.error-electricos {
+  color: #dc3545;
+  text-align: center;
+  font-style: italic;
+  margin: 20px auto;
+  max-width: 400px;
+  background: #fff3f3;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  padding: 15px;
+  animation: none;
+}
+
+/* Responsive para tarjetas y clima */
 @media (max-width: 768px) {
   .filtros {
     flex-direction: column;
     align-items: center;
   }
-
-  select, button {
-    width: 100%;
-  }
-
   .destacada::before,
   .cercana::before {
     right: 5px;
@@ -384,43 +406,26 @@ button:disabled {
     font-size: 10px;
     padding: 3px 6px;
   }
-
   .gasolinera {
     margin: 0 5px;
   }
-
   .clima-info-grid {
     grid-template-columns: 1fr;
     text-align: center;
   }
-
   .clima-header {
     flex-direction: column;
     text-align: center;
     gap: 10px;
   }
-
   .clima-detalles {
     flex-direction: column;
     gap: 10px;
   }
 }
-
 @media (max-width: 500px) {
-  body {
-    padding: 10px;
-  }
-
-  .clima-card {
-    padding: 15px;
-  }
-
-  .temp-principal {
-    font-size: 28px;
-  }
-
-  .clima-icono {
-    width: 50px;
-    height: 50px;
-  }
+  body { padding: 10px; }
+  .clima-card { padding: 15px; }
+  .temp-principal { font-size: 28px; }
+  .clima-icono { width: 50px; height: 50px; }
 }
