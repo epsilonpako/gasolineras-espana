@@ -4,231 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Consulta de Gasolina en España</title>
-  <style>
-    :root {
-    --bg: #f0f4f8;
-    --card: #ffff;
-    --primary: #2c3e50;
-    --accent: #3498db;
-    --text: #333;
-    --success: #27ae60;
-    }
-
-    * {
-    box-sizing: border-box;
-    }
-
-    body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: var(--bg);
-    padding: 20px;
-    color: var(--text);
-    }
-
-    header {
-    text-align: center;
-    margin-bottom: 30px;
-    }
-
-    header h1 {
-    color: var(--primary);
-    margin-bottom: 10px;
-    }
-
-    .filtros {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    }
-
-    select, button {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    min-width: 200px;
-    }
-
-    button {
-    background: var(--success);
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    }
-
-    button:hover {
-    background: #219a52;
-    }
-
-    button:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-    }
-
-    .geo-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    }
-
-    .loading {
-    animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-    }
-
-    #resultados {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    }
-
-    .gasolinera {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative; /* IMPORTANTE: Para posicionar las etiquetas correctamente */
-    }
-
-    .gasolinera:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-
-    .gasolinera h3 {
-    margin-top: 0;
-    color: var(--accent);
-    }
-
-    .gasolinera p {
-    margin: 6px 0;
-    font-size: 14px;
-    }
-
-    .distancia {
-    color: var(--success);
-    font-weight: bold;
-    }
-
-    .destacada {
-    border: 2px solid var(--accent);
-    background-color: #e8f4ff;
-    }
-
-    /* CORREGIDO: Etiqueta "Más barata" */
-    .destacada::before {
-    content: "⭐ Más barata";
-    position: absolute;
-    top: -8px;
-    right: 10px;
-    background: var(--accent);
-    color: white;
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    z-index: 10;
-    }
-
-    .cercana {
-    border: 2px solid var(--success);
-    background-color: #e8f5e8;
-    }
-
-    /* CORREGIDO: Etiqueta "Cercana" */
-    .cercana::before {
-    content: "📍 Cercana";
-    position: absolute;
-    top: -8px;
-    right: 10px;
-    background: var(--success);
-    color: white;
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    z-index: 10;
-    }
-
-    /* NUEVO: Evitar que las etiquetas se salgan en móviles */
-    @media (max-width: 500px) {
-    .filtros {
-    flex-direction: column;
-    align-items: center;
-    }
-
-    select, button {
-    width: 100%;
-    }
-
-    .destacada::before,
-    .cercana::before {
-    right: 5px;
-    top: -6px;
-    font-size: 10px;
-    padding: 3px 6px;
-    }
-
-    .gasolinera {
-    margin: 0 5px; /* Margen para que las etiquetas no se salgan */
-    }
-    }
-
-    /* NUEVO: Asegurar que las etiquetas no interfieran con el scroll */
-    body {
-    overflow-x: hidden;
-    }
-
-    #resultados {
-    overflow: visible;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
     <h1>🛢️ Precios de Gasolina en España</h1>
-    <p>Consulta actualizada directamente del Ministerio</p>
+    <p>Consulta actualizada directamente del Ministerio
+	<span id="fecha-actualizacion"></span>
+	</p>
   </header>
 
   <div class="filtros">
     <select id="provincia">
-    <option value="">Cargando provincias...</option>
+      <option value="">Cargando provincias...</option>
     </select>
 
     <select id="municipio" disabled>
-    <option value="">Seleccione provincia primero</option>
+      <option value="">Seleccione provincia primero</option>
     </select>
 
     <select id="carburante">
-    <option value="Precio Gasolina 95 E5">Gasolina 95</option>
-    <option value="Precio Gasolina 98 E5">Gasolina 98</option>
-    <option value="Precio Gasoleo A">Gasóleo A</option>
-    <option value="Precio Gasoleo Premium">Gasóleo Premium</option>
-    <option value="Precio Gasolina 95 E10">Gasolina 95 E10</option>
-    <option value="Precio Gasolina 98 E10">Gasolina 98 E10</option>
-    <option value="Precio Bioetanol">Bioetanol</option>
-    <option value="Precio Biodiesel">Biodiésel</option>
-    <option value="Precio Gas Natural Comprimido">GNC</option>
-    <option value="Precio Gas Natural Licuado">GNL</option>
-    <option value="Precio Gases licuados del petróleo">GLP</option>
-    <option value="Precio Hidrogeno">Hidrógeno</option>
+      <option value="Precio Gasolina 95 E5">Gasolina 95</option>
+      <option value="Precio Gasolina 98 E5">Gasolina 98</option>
+      <option value="Precio Gasoleo A">Gasóleo A</option>
+      <option value="Precio Gasoleo Premium">Gasóleo Premium</option>
+      <option value="Precio Gasolina 95 E10">Gasolina 95 E10</option>
+      <option value="Precio Gasolina 98 E10">Gasolina 98 E10</option>
+      <option value="Precio Bioetanol">Bioetanol</option>
+      <option value="Precio Biodiesel">Biodiésel</option>
+      <option value="Precio Gas Natural Comprimido">GNC</option>
+      <option value="Precio Gas Natural Licuado">GNL</option>
+      <option value="Precio Gases licuados del petróleo">GLP</option>
+      <option value="Precio Hidrogeno">Hidrógeno</option>
     </select>
 
     <button id="geolocalizacion" class="geo-button">
-    <span id="geo-icon">📍</span>
-    <span id="geo-text">Gasolineras cercanas</span>
+      <span id="geo-icon">📍</span>
+      <span id="geo-text">Gasolineras cercanas</span>
     </button>
   </div>
 
+  <!-- SECCIÓN DEL CLIMA -->
+  <div id="clima-info"></div>
+
+  <!-- RESULTADOS -->
   <div id="resultados"></div>
 
   <script src="app.js"></script>
