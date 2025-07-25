@@ -15,7 +15,7 @@ function iniciarBusquedaElectricos() {
     
     // Deshabilitar botón y mostrar loading
     btnElectrico.disabled = true;
-    btnElectrico.textContent = 'Buscando...';
+   btnElectrico.innerHTML = '<span>⏳</span><span>Buscando...</span>';
     recargaLista.innerHTML = '<div class="loading">Obteniendo tu ubicación...</div>';
 
     if (navigator.geolocation) {
@@ -79,7 +79,7 @@ function mostrarPuntosRecarga(puntos) {
         return;
     }
 	
-    let html = '<h2>⚡ Puntos de recarga cercanos:</h2><div id="resultados-electricos">';
+    let html = '<h2>⚡Puntos de recarga cercanos: (25km max.)</h2><div id="resultados-electricos">';
     puntos.forEach(punto => {
         const nombre = punto.AddressInfo?.Title || 'Punto de recarga';
         const direccion = punto.AddressInfo?.AddressLine1 || '';
@@ -119,7 +119,7 @@ function mostrarError(mensaje) {
 }
 
 function resetearBoton() {
-    const btnElectrico = document.getElementById('btn-electrico');
-    btnElectrico.disabled = false;
-    btnElectrico.textContent = 'Mi coche es eléctrico';
+  const btnElectrico = document.getElementById('btn-electrico');
+  btnElectrico.disabled = false;
+  btnElectrico.innerHTML = '<span>🔋</span><span>Mi coche es eléctrico</span>';
 }
