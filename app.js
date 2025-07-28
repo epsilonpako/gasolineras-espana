@@ -515,7 +515,6 @@ function obtenerCapitalProvincia(provincia) {
 
  
 function mostrarClima(clima, ubicacion, tipo) {
-  function mostrarClima(clima, ubicacion, tipo) {
   const climaContainer = document.getElementById("clima-info");
   if (!climaContainer) return;
 
