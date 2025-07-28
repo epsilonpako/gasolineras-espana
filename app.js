@@ -264,7 +264,12 @@ function llenarProvincias() {
   console.log("📋 Llenando provincias...");
 
   try {
-    const provincias = [...new Set(datosGasolineras.map(e => e.Provincia))].sort();
+    // Obtener provincias únicas
+    const provincias = [...new Set(datosGasolineras.map(e => e.Provincia))];
+
+    // Ordenar con localeCompare para manejar tildes correctamente
+    provincias.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+
     const selectProv = document.getElementById("provincia");
 
     if (!selectProv) {
