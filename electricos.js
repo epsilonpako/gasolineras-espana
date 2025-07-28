@@ -39,7 +39,7 @@ function iniciarBusquedaElectricos() {
 
 async function buscarPuntosRecarga(lat, lng) {
     const recargaLista = document.getElementById('recarga-lista');
-    const apiKey = 'e924a27a-4b9a-4fb7-9712-13cc310beabb';
+    const apiKey = CONFIG.OPENCHARGE_API_KEY;
 
     try {
         recargaLista.innerHTML = `

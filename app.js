@@ -1,8 +1,9 @@
+
 let datosGasolineras = [];
 let ubicacionUsuario = null;
 
 // API Key del clima
-const apiKey = '2751c34eac1e3f2117bf2038edec76ce';
+const apiKey = CONFIG.OPENWEATHER_API_KEY;
 
 // Función principal que se ejecuta al cargar la página
 // Función principal que se ejecuta al cargar la página
