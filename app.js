@@ -428,10 +428,8 @@ async function obtenerClima(ubicacion) {
   try {
     let url;
     if (typeof ubicacion === 'string') {
-      // Buscar por nombre de ciudad
       url = `/.netlify/functions/weather?city=${encodeURIComponent(ubicacion)}`;
     } else if (typeof ubicacion === 'object' && ubicacion.lat && ubicacion.lon) {
-      // Buscar por coordenadas
       url = `/.netlify/functions/weather?lat=${ubicacion.lat}&lon=${ubicacion.lon}`;
     } else {
       throw new Error('Parámetro de ubicación inválido');
@@ -441,22 +439,19 @@ async function obtenerClima(ubicacion) {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const data = await response.json();
+    console.log('Datos recibidos en obtenerClima:', data);  // <-- Aquí
 
     if (data && data.main && data.weather && data.weather[0]) {
-      return {
-        temperatura: Math.round(data.main.temp),
-        descripcion: data.weather[0].description,
-        icono: data.weather[0].icon
-      };
+      return data;
     } else {
       throw new Error('Estructura de datos incorrecta');
     }
   } catch (error) {
     console.error('Error al obtener el clima:', error);
     return {
-      temperatura: '--',
-      descripcion: 'No disponible',
-      icono: '01d'
+      main: { temp: '--', feels_like: '--', humidity: '--' },
+      weather: [{ description: 'No disponible', icon: '01d' }],
+      wind: { speed: 0 }
     };
   }
 }
@@ -522,6 +517,11 @@ function obtenerCapitalProvincia(provincia) {
 function mostrarClima(clima, ubicacion, tipo) {
   const climaContainer = document.getElementById("clima-info");
   if (!climaContainer) return;
+
+  if (!clima || !clima.main || !clima.weather || !clima.weather[0]) {
+    climaContainer.innerHTML = '<div class="clima-error">❌ Datos de clima no disponibles</div>';
+    return;
+  }
 
   const temperatura = Math.round(clima.main.temp);
   const sensacion = Math.round(clima.main.feels_like);
