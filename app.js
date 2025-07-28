@@ -426,18 +426,30 @@ async function cargarClimaMunicipio(municipio, provincia) {
 
 async function obtenerClima(lat, lon) {
     try {
+        console.log('🌤️ Obteniendo clima para coordenadas:', lat, lon);
+        
         // Usar Netlify Function en lugar de API directa
         const response = await fetch(`/.netlify/functions/weather?lat=${lat}&lon=${lon}`);
-        const data = await response.json();
         
-        if (response.ok) {
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Weather data received:', data);
+        
+        // Verificar que los datos tienen la estructura esperada
+        if (data && data.main && data.weather && data.weather[0]) {
             return {
                 temperatura: Math.round(data.main.temp),
                 descripcion: data.weather[0].description,
                 icono: data.weather[0].icon
             };
         } else {
-            throw new Error('Error en la respuesta del clima');
+            console.error('Datos de clima con estructura incorrecta:', data);
+            throw new Error('Estructura de datos incorrecta');
         }
     } catch (error) {
         console.error('Error al obtener el clima:', error);
