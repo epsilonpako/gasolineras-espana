@@ -515,6 +515,7 @@ function obtenerCapitalProvincia(provincia) {
 
  
 function mostrarClima(clima, ubicacion, tipo) {
+  function mostrarClima(clima, ubicacion, tipo) {
   const climaContainer = document.getElementById("clima-info");
   if (!climaContainer) return;
 
@@ -522,6 +523,9 @@ function mostrarClima(clima, ubicacion, tipo) {
     climaContainer.innerHTML = '<div class="clima-error">❌ Datos de clima no disponibles</div>';
     return;
   }
+
+  // Usa el nombre que viene en la respuesta si no se pasa ubicación
+  const nombreUbicacion = ubicacion || clima.name || "Tu ubicación";
 
   const temperatura = Math.round(clima.main.temp);
   const sensacion = Math.round(clima.main.feels_like);
@@ -535,7 +539,7 @@ function mostrarClima(clima, ubicacion, tipo) {
   climaContainer.innerHTML = `
     <div class="clima-card">
       <div class="clima-header">
-        <h3>${tipoTexto} Clima en ${ubicacion}</h3>
+        <h3>${tipoTexto} Clima en ${nombreUbicacion}</h3>
         <img src="https://openweathermap.org/img/wn/${icono}@2x.png" alt="${descripcion}" class="clima-icono">
       </div>
       <div class="clima-info-grid">
@@ -716,9 +720,8 @@ async function cargarClimaPorCoordenadas(lat, lon) {
   climaContainer.innerHTML = '<div class="clima-loading">🌤️ Cargando clima...</div>';
 
   try {
-    // No uses apiKey aquí, solo llama a obtenerClima con las coordenadas
     const clima = await obtenerClima({ lat, lon });
-    mostrarClima(clima, "Tu ubicación", "ubicacion");
+    mostrarClima(clima, null, "ubicacion"); // Pasamos null para que use el nombre de la respuesta
   } catch (error) {
     console.error("❌ Error cargando clima:", error);
     climaContainer.innerHTML = '<div class="clima-error">❌ No se pudo cargar el clima</div>';
