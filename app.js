@@ -3,7 +3,7 @@ let datosGasolineras = [];
 let ubicacionUsuario = null;
 
 // API Key del clima
-const apiKey = CONFIG.OPENWEATHER_API_KEY;
+// const apiKey = CONFIG.OPENWEATHER_API_KEY;
 
 // Función principal que se ejecuta al cargar la página
 // Función principal que se ejecuta al cargar la página
@@ -424,16 +424,29 @@ async function cargarClimaMunicipio(municipio, provincia) {
   }
 }
 
-async function obtenerClima(ciudad) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(ciudad)}&appid=${apiKey}&units=metric&lang=es`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Error HTTP: ${response.status}`);
-  }
-
-  return await response.json();
+async function obtenerClima(lat, lon) {
+    try {
+        // Usar Netlify Function en lugar de API directa
+        const response = await fetch(`/.netlify/functions/weather?lat=${lat}&lon=${lon}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            return {
+                temperatura: Math.round(data.main.temp),
+                descripcion: data.weather[0].description,
+                icono: data.weather[0].icon
+            };
+        } else {
+            throw new Error('Error en la respuesta del clima');
+        }
+    } catch (error) {
+        console.error('Error al obtener el clima:', error);
+        return {
+            temperatura: '--',
+            descripcion: 'No disponible',
+            icono: '01d'
+        };
+    }
 }
 
 function obtenerCapitalProvincia(provincia) {

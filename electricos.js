@@ -39,24 +39,24 @@ function iniciarBusquedaElectricos() {
 
 async function buscarPuntosRecarga(lat, lng) {
     const recargaLista = document.getElementById('recarga-lista');
-    const apiKey = CONFIG.OPENCHARGE_API_KEY;
 
     try {
         recargaLista.innerHTML = `
-		<div class="spinner-content" style="margin: 0 auto; max-width: 320px;">
-		<div class="spinner-icon">⏳</div>
-		<div id="mensaje-carga-electricos">Buscando puntos de recarga cercanos...</div>
-		<div class="spinner-bar">
-		<div class="spinner-progress"></div>
-		</div>
-		<div class="spinner-tip">
-		<small>💡 Puede tardar unos segundos según tu conexión</small>
-		</div>
-		</div>
-			`;
-        const url = `https://api.openchargemap.io/v3/poi/?output=json&countrycode=ES&latitude=${lat}&longitude=${lng}&distance=25&maxresults=15&key=${apiKey}`;
-        const response = await fetch(url);
-
+            <div class="spinner-content" style="margin: 0 auto; max-width: 320px;">
+            <div class="spinner-icon">⏳</div>
+            <div id="mensaje-carga-electricos">Buscando puntos de recarga cercanos...</div>
+            <div class="spinner-bar">
+            <div class="spinner-progress"></div>
+            </div>
+            <div class="spinner-tip">
+            <small>💡 Puede tardar unos segundos según tu conexión</small>
+            </div>
+            </div>
+        `;
+        
+        // Usar Netlify Function en lugar de API directa
+        const response = await fetch(`/.netlify/functions/charging?latitude=${lat}&longitude=${lng}&distance=25`);
+        
         if (!response.ok) {
             throw new Error('Error en la respuesta del servidor');
         }
