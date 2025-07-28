@@ -15,16 +15,16 @@ async function iniciarBusquedaElectricos() {
     
     // Deshabilitar botón y mostrar loading
     btnElectrico.disabled = true;
-   btnElectrico.innerHTML = '<span>⏳</span><span>Buscando...</span>';
+    btnElectrico.innerHTML = '<span>⏳</span><span>Buscando...</span>';
     recargaLista.innerHTML = '<div class="loading">Obteniendo tu ubicación...</div>';
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            function(position) {
+            async function(position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 buscarPuntosRecarga(lat, lng);
-				await cargarClimaPorCoordenadas(lat, lng);
+                await cargarClimaPorCoordenadas(lat, lng);
             },
             function(error) {
                 mostrarError('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
