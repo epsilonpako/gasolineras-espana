@@ -2,9 +2,14 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
   const apiKey = process.env.OPENWEATHER_API_KEY;
-  const { lat, lon, city } = event.queryStringParameters || {};
+  const params = event.queryStringParameters || {};
+
+  const city = params.city;
+  const lat = params.lat;
+  const lon = params.lon;
 
   let url;
+
   if (city) {
     url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=es`;
   } else if (lat && lon) {
