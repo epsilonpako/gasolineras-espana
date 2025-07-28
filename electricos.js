@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function iniciarBusquedaElectricos() {
+async function iniciarBusquedaElectricos() {
     const btnElectrico = document.getElementById('btn-electrico');
     const recargaLista = document.getElementById('recarga-lista');
     
@@ -24,7 +24,7 @@ function iniciarBusquedaElectricos() {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 buscarPuntosRecarga(lat, lng);
-				mostrarClima(lat, lng);
+				await cargarClimaPorCoordenadas(lat, lng);
             },
             function(error) {
                 mostrarError('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
