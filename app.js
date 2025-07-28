@@ -709,21 +709,16 @@ function obtenerUbicacion() {
   );
 }
 
-async function cargarClimaPorCoordenadas(lat, lng) {
+async function cargarClimaPorCoordenadas(lat, lon) {
   const climaContainer = document.getElementById("clima-info");
   if (!climaContainer) return;
 
   climaContainer.innerHTML = '<div class="clima-loading">🌤️ Cargando clima...</div>';
 
   try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric&lang=es`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-    const clima = await response.json();
-
-    // Mostrar el nombre de la localidad si está disponible
-    let ubicacion = clima.name || "tu ubicación";
-    mostrarClima(clima, ubicacion, "ubicacion");
+    // No uses apiKey aquí, solo llama a obtenerClima con las coordenadas
+    const clima = await obtenerClima({ lat, lon });
+    mostrarClima(clima, "Tu ubicación", "ubicacion");
   } catch (error) {
     console.error("❌ Error cargando clima:", error);
     climaContainer.innerHTML = '<div class="clima-error">❌ No se pudo cargar el clima</div>';
